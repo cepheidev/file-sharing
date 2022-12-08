@@ -208,7 +208,6 @@ async def send_text(client: Bot, message: Message):
                 deleted += 1
             except:
                 unsuccessful += 1
-                pass
             total += 1
         status = f"""<b><u>Berhasil Broadcast</u>
 Jumlah Pengguna: <code>{total}</code>
