@@ -9,3 +9,5 @@ speedtest-cli
 sqlalchemy==1.3.23
 TgCrypto
 wget
+# --- For-Web-Response ------- #
+aiohttp
