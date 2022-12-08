@@ -1,8 +1,10 @@
 feedparser
 gitpython
-heroku3
+# --- For-Bot-Working --------- #
+pyrogram
+TgCrypto
+Pyromod
 psycopg2-binary
-pyrogram==1.4.16
 python-dotenv
 Pyromod
 speedtest-cli
