@@ -11,3 +11,5 @@ TgCrypto
 wget
 # --- For-Web-Response ------- #
 aiohttp
+pymongo
+dnspython
