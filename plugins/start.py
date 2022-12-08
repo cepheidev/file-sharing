@@ -15,7 +15,7 @@ from config import (
     PROTECT_CONTENT,
     START_MSG,
 )
-from database.sql import add_user, full_userbase, query_msg
+from database.database import add_user, del_user, full_userbase, 
 from pyrogram import filters
 from pyrogram.errors import FloodWait, InputUserDeactivated, UserIsBlocked
 from pyrogram.types import InlineKeyboardMarkup, Message
@@ -49,16 +49,11 @@ async def _human_time_duration(seconds):
 @Bot.on_message(filters.command("start") & filters.private & subsall & subsch & subsgc)
 async def start_command(client: Bot, message: Message):
     id = message.from_user.id
-    user_name = (
-        f"@{message.from_user.username}"
-        if message.from_user.username
-        else None
-    )
-
-    try:
-        await add_user(id, user_name)
-    except:
-        pass
+    if not await present_user(id):
+        try:
+            await add_user(id)
+        except:
+            pass
     text = message.text
     if len(text) > 7:
         try:
@@ -149,6 +144,18 @@ async def start_command(client: Bot, message: Message):
     return
 
 
+#=====================================================================================##
+
+WAIT_MSG = """"<b>Processing ...</b>"""
+
+REPLY_ERROR = """<code>Use this command as a replay to any telegram message with out any spaces.</code>"""
+
+#=====================================================================================##
+
+
+
+
+
 @Bot.on_message(filters.command("start") & filters.private)
 async def not_joined(client: Bot, message: Message):
     buttons = fsub_button(client, message)
@@ -180,7 +187,7 @@ async def get_users(client: Bot, message: Message):
 @Bot.on_message(filters.command("broadcast") & filters.user(ADMINS))
 async def send_text(client: Bot, message: Message):
     if message.reply_to_message:
-        query = await query_msg()
+        query = await full_userbase()
         broadcast_msg = message.reply_to_message
         total = 0
         successful = 0
@@ -191,7 +198,7 @@ async def send_text(client: Bot, message: Message):
         pls_wait = await message.reply(
             "<code>Broadcasting Message Tunggu Sebentar...</code>"
         )
-        for row in query:
+        for chat_id in query:
             chat_id = int(row[0])
             if chat_id not in ADMINS:
                 try:
@@ -202,8 +209,10 @@ async def send_text(client: Bot, message: Message):
                     await broadcast_msg.copy(chat_id, protect_content=PROTECT_CONTENT)
                     successful += 1
                 except UserIsBlocked:
+                await del_user(chat_id)
                     blocked += 1
                 except InputUserDeactivated:
+                await del_user(chat_id)
                     deleted += 1
                 except BaseException:
                     unsuccessful += 1
